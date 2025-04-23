@@ -2,11 +2,267 @@ doctype
 html(lang='en')
     head
         meta(charset='utf-8')
-        title
+        meta(name='viewport' content='width=device-width, initial-scale=1')
+        title واتساب بوت
+        link(href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet')
+        style.
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f8f9fa;
+                padding: 20px;
+                direction: rtl;
+            }
+            .container {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            .card {
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            .card-header {
+                background-color: #25D366;
+                color: white;
+                font-weight: bold;
+            }
+            .qr-section {
+                text-align: center;
+                padding: 20px;
+            }
+            .api-section {
+                padding: 20px;
+            }
+            .api-method {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                margin-bottom: 15px;
+            }
+            .api-method pre {
+                background-color: #eee;
+                padding: 10px;
+                border-radius: 5px;
+                overflow-x: auto;
+            }
+            .badge-get {
+                background-color: #61affe;
+            }
+            .badge-post {
+                background-color: #49cc90;
+            }
+            .form-section {
+                padding: 20px;
+            }
+            #qr-div {
+                margin: 20px auto;
+            }
     body
-    span(style="display:none;", id="qrcode")=qr
-    span(style="display:none;", id="clientready")=clientready
-    span(style="display:none;", id="clientauthenticated")=clientauthenticated
-    h3 Scan Qr bar-code to connect your Whatsapp, refresh and rescan if error occurs
-    div(id="qr-div")
-    script(src="/js/qr.js" type="module")
+        span(style="display:none;", id="qrcode")=qr
+        span(style="display:none;", id="clientready")=clientready
+        span(style="display:none;", id="clientauthenticated")=clientauthenticated
+        
+        div.container
+            h1.text-center.mb-4 واتساب بوت
+            
+            div.card
+                div.card-header حالة الاتصال
+                div.card-body.qr-section
+                    h3 امسح رمز QR للاتصال بواتساب. قم بتحديث الصفحة وإعادة المسح إذا حدث خطأ
+                    div(id="qr-div")
+                    div.mt-3
+                        p#client-status حالة الاتصال: غير متصل
+            
+            div.card
+                div.card-header إرسال رسالة
+                div.card-body.form-section
+                    div.alert.alert-info يجب أن تكون متصلاً بواتساب عبر رمز QR قبل استخدام هذه الميزة
+                    div.row
+                        div.col-md-6.mb-3
+                            label.form-label(for="sendNumber") رقم الهاتف (مع رمز الدولة، بدون +)
+                            input.form-control#sendNumber(type="text" placeholder="971501234567" dir="ltr")
+                        div.col-md-6.mb-3
+                            label.form-label(for="sendMessage") الرسالة
+                            textarea.form-control#sendMessage(rows="3" dir="rtl")
+                        div.col-12
+                            button.btn.btn-success#sendButton(type="button") إرسال الرسالة
+                    div.mt-3#sendResult
+            
+            div.card
+                div.card-header التحقق من وجود رقم على واتساب
+                div.card-body.form-section
+                    div.alert.alert-info يجب أن تكون متصلاً بواتساب عبر رمز QR قبل استخدام هذه الميزة
+                    div.row
+                        div.col-md-6.mb-3
+                            label.form-label(for="checkNumber") رقم الهاتف (مع رمز الدولة، بدون +)
+                            input.form-control#checkNumber(type="text" placeholder="971501234567" dir="ltr")
+                        div.col-md-6.mb-3
+                            button.btn.btn-primary#checkButton(type="button") التحقق من الرقم
+                    div.mt-3#checkResult
+            
+            div.card
+                div.card-header توثيق واجهة برمجة التطبيقات API
+                div.card-body.api-section
+                    h4 1. إرسال رسالة واتساب
+                    div.api-method
+                        span.badge.badge-post.text-white POST
+                        span.ms-2 /api/v1
+                        p.mt-2 إرسال رسالة إلى رقم هاتف عبر واتساب
+                        h5 نموذج الطلب:
+                        pre.
+                            curl -X POST http://localhost:4000/api/v1 \\
+                            -H "Content-Type: application/json" \\
+                            -d '{
+                                "number": "971501234567",
+                                "message": "مرحبا! هذه رسالة تجريبية"
+                            }'
+                        h5 نموذج الاستجابة:
+                        pre.
+                            {
+                                "success": true,
+                                "message": "message sent!"
+                            }
+                    
+                    h4 2. التحقق من وجود رقم على واتساب
+                    div.api-method
+                        span.badge.badge-post.text-white POST
+                        span.ms-2 /api/v1/check-number
+                        p.mt-2 التحقق مما إذا كان رقم الهاتف مسجل على واتساب
+                        h5 نموذج الطلب:
+                        pre.
+                            curl -X POST http://localhost:4000/api/v1/check-number \\
+                            -H "Content-Type: application/json" \\
+                            -d '{
+                                "number": "971501234567"
+                            }'
+                        h5 نموذج الاستجابة:
+                        pre.
+                            {
+                                "success": true,
+                                "exists": true,
+                                "number_details": {
+                                    "_serialized": "971501234567@c.us",
+                                    "server": "c.us",
+                                    "user": "971501234567"
+                                }
+                            }
+                    
+                    h4 3. تسجيل الخروج
+                    div.api-method
+                        span.badge.badge-get.text-white GET
+                        span.ms-2 /api/v1/logout
+                        p.mt-2 تسجيل الخروج من جلسة واتساب الحالية
+                        h5 نموذج الطلب:
+                        pre.
+                            curl -X GET http://localhost:4000/api/v1/logout
+                        h5 نموذج الاستجابة:
+                        pre.
+                            {
+                                "success": true,
+                                "message": "log out succesful"
+                            }
+        
+        script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')
+        script(src="/js/qr.js" type="module")
+        script.
+            document.addEventListener('DOMContentLoaded', function() {
+                // تحديث حالة الاتصال
+                function updateStatus() {
+                    const clientreadyEl = document.getElementById('clientready');
+                    const clientauthenticatedEl = document.getElementById('clientauthenticated');
+                    const statusEl = document.getElementById('client-status');
+                    
+                    if (clientauthenticatedEl.textContent === 'yes') {
+                        statusEl.innerHTML = '<span class="badge bg-success">متصل</span>';
+                        enableFeatures(true);
+                    } else if (clientreadyEl.textContent === 'yes') {
+                        statusEl.innerHTML = '<span class="badge bg-warning">جاهز ولكن غير متصل</span>';
+                        enableFeatures(false);
+                    } else {
+                        statusEl.innerHTML = '<span class="badge bg-danger">غير متصل</span>';
+                        enableFeatures(false);
+                    }
+                }
+                
+                // تمكين/تعطيل الميزات
+                function enableFeatures(enabled) {
+                    document.getElementById('sendButton').disabled = !enabled;
+                    document.getElementById('checkButton').disabled = !enabled;
+                }
+                
+                // إرسال رسالة
+                document.getElementById('sendButton').addEventListener('click', function() {
+                    const number = document.getElementById('sendNumber').value;
+                    const message = document.getElementById('sendMessage').value;
+                    const resultEl = document.getElementById('sendResult');
+                    
+                    if (!number || !message) {
+                        resultEl.innerHTML = '<div class="alert alert-danger">يرجى ملء جميع الحقول</div>';
+                        return;
+                    }
+                    
+                    resultEl.innerHTML = '<div class="alert alert-info">جارٍ إرسال الرسالة...</div>';
+                    
+                    fetch('/api/v1', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ number, message })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            resultEl.innerHTML = '<div class="alert alert-success">تم إرسال الرسالة بنجاح!</div>';
+                        } else {
+                            resultEl.innerHTML = `<div class="alert alert-danger">فشل إرسال الرسالة: ${data.error}</div>`;
+                        }
+                    })
+                    .catch(error => {
+                        resultEl.innerHTML = `<div class="alert alert-danger">حدث خطأ: ${error.message}</div>`;
+                    });
+                });
+                
+                // التحقق من رقم
+                document.getElementById('checkButton').addEventListener('click', function() {
+                    const number = document.getElementById('checkNumber').value;
+                    const resultEl = document.getElementById('checkResult');
+                    
+                    if (!number) {
+                        resultEl.innerHTML = '<div class="alert alert-danger">يرجى إدخال رقم هاتف</div>';
+                        return;
+                    }
+                    
+                    resultEl.innerHTML = '<div class="alert alert-info">جارٍ التحقق من الرقم...</div>';
+                    
+                    fetch('/api/v1/check-number', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ number })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (data.exists) {
+                                resultEl.innerHTML = '<div class="alert alert-success">الرقم مسجل على واتساب ✓</div>';
+                                if (data.number_details) {
+                                    resultEl.innerHTML += `<pre dir="ltr">${JSON.stringify(data.number_details, null, 2)}</pre>`;
+                                }
+                            } else {
+                                resultEl.innerHTML = '<div class="alert alert-warning">الرقم غير مسجل على واتساب ✗</div>';
+                            }
+                        } else {
+                            resultEl.innerHTML = `<div class="alert alert-danger">فشل التحقق: ${data.error}</div>`;
+                        }
+                    })
+                    .catch(error => {
+                        resultEl.innerHTML = `<div class="alert alert-danger">حدث خطأ: ${error.message}</div>`;
+                    });
+                });
+                
+                // تحديث الحالة عند تحميل الصفحة
+                updateStatus();
+            });

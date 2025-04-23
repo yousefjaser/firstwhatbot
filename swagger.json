@@ -104,6 +104,97 @@
                 }
             }
         },
+        "/check-number": {
+            "post": {
+                "description": "Check if a phone number exists on WhatsApp",
+                "requestBody": {
+                    "description": "request data",
+                    "required": true,
+                    "content": {
+                        "application/json" : {
+                            "schema":{
+                                "type":"object",
+                                "properties": {
+                                    "number":{
+                                        "type": "string",
+                                        "example": "971501234567"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "type": "object",
+                                  "properties": {
+                                    "success":{
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "exists":{
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "number_details":{
+                                        "type": "object",
+                                        "example": {
+                                            "_serialized": "971501234567@c.us",
+                                            "server": "c.us",
+                                            "user": "971501234567"
+                                        }
+                                    }
+                                  }
+                                }
+                              }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "type": "object",
+                                  "properties": {
+                                    "success":{
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "error":{
+                                        "type":"string",
+                                        "example": "Phone number is required"
+                                    }
+                                  }
+                                }
+                              }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "type": "object",
+                                  "properties": {
+                                    "success":{
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "error":{
+                                        "type":"string"
+                                    }
+                                  }
+                                }
+                              }
+                        }
+                    }
+                }
+            }
+        },
         "/logout": {
             "get": {
                 "description": "Logout Whatsapp Client",
@@ -197,7 +288,29 @@
                     }
                 }
             }
+        },
+        "/health": {
+            "get": {
+                "description": "Check API health status",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "up"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-        
     }
 }

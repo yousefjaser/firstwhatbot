@@ -43,6 +43,41 @@ exports.sendMessage = async (req, res, next) => {
   }
 };
 
+exports.checkNumber = async (req, res, next) => {
+  try {
+    const { number } = req.body;
+    let client = req.whatsappclient;
+    if (!client || !global.clientready) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Whatsapp client is instantiating and not ready, could not process your request at this time please wait a few minutes and try again",
+      });
+    }
+
+    if (isEmpty(number)) {
+      return res.status(400).json({
+        success: false,
+        error: "Phone number is required",
+      });
+    }
+
+    const number_details = await client.getNumberId(number); // get mobile number details
+    
+    return res.status(200).json({
+      success: true,
+      exists: number_details !== null,
+      number_details: number_details ? number_details : null
+    });
+  } catch (err) {
+    reportError("checkNumber err", err);
+    return res.status(400).json({
+      success: false,
+      error: "Something went wrong please try again",
+    });
+  }
+};
+
 exports.logOut = async (req, res, next) => {
   try {
     if (!req.whatsappclient || !global.clientready) {
