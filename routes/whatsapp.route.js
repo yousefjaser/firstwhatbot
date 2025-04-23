@@ -13,4 +13,9 @@ router.get("/qr", (req, res) => {
 });
 router.route("/logout").get(logOut).post(logOut);
 
+// إضافة مسار فحص الصحة
+router.get("/health", (req, res) => {
+  res.status(200).json({ status: "up" });
+});
+
 module.exports = router;

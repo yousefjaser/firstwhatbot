@@ -1,15 +1,14 @@
 {
   "name": "whatsap-bot",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "WhatsApp Bot Server",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "devStart": "nodemon server.js",
-    "start":"pm2 start server.js --watch && pm2 monit",
-    "stop" : "pm2 stop server.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
-  "keywords": [],
+  "keywords": ["whatsapp", "bot", "nodejs"],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -23,5 +22,8 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
